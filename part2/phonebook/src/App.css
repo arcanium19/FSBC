@@ -1,0 +1,157 @@
+.main-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #dce4f9;
+}
+
+.main-container h2{
+  text-transform: uppercase;
+  font-size: 20px;
+  color: #02050d;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.mid-container form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.btn{
+  background-color: #2350cd;
+  height: 40px;
+  width: 150px;
+  border: none;
+  text-transform: uppercase;
+  border-radius: 5px;
+  margin-top: 20px;
+  cursor: pointer;
+  color: #dce4f9;
+  font-weight: 600;
+  transition: 0.2s ease-in-out;
+}
+
+.btn2{
+  background-color: #2350cd;
+  border: none;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #dce4f9;
+  font-weight: 300;
+  font-size: 11px;
+  padding: 5px;
+  margin-left: 5px;
+  transition: 0.2s ease-in-out;
+
+}
+
+.btn:hover, .btn2:hover{
+    background-color: #2350cd9d;
+
+}
+
+/* Header component */
+
+.main-container span{
+  background: #ccc;
+  background: linear-gradient(150deg, #618bff,#2350cd, #02050d);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  color: #2350cd;
+  text-transform: uppercase;
+  font-size: 2rem;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  margin-left: 20px;
+}
+
+.header-container{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-color: #062c9434;
+  height: fit-content;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+/* Search Bar Component */
+
+.search-bar{
+  display: flex;
+  flex-direction: row;
+  margin-right: 20px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-bar input{
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  margin-left: 5px;
+}
+
+/* Notification component */
+.error{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  background-color: #b81048;
+  border: 2px solid #b810482f;
+  border-radius: 5px;
+  margin-top: 30px;
+  padding: 0;
+}
+.success{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  background-color: #10b869;
+  border: 2px solid #c4ffe428;
+  border-radius: 5px;
+  margin-top: 30px;
+  padding: 0;
+}
+
+/* Add new Number component */
+.mid-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  background-color: #8ea7ec;
+  border: 2px solid #8ea7ec2c;
+  border-radius: 5px;
+  margin-top: 30px;
+  padding: 20px 0;
+}
+
+.list{
+  display: flex;
+  flex-direction: row;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+}
+
+.list h6{
+  text-align: right;
+  width: 65px;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-right: 5px;
+}
+
