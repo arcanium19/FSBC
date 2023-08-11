@@ -1,5 +1,7 @@
 import axios from 'axios';
-const url =  `http://localhost:3001/persons`
+
+const backend = process.env.REACT_APP_BACKEND_URL
+const url =  `${backend}/api/persons`
 
 export const createNumber = async contactData =>{
 
