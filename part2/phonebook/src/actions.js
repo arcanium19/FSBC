@@ -10,6 +10,7 @@ export const createNumber = async contactData =>{
         return result;
     } catch (error) {
         console.log({error: error.message})
+        return `error: please try againg`
     }
     
 }
@@ -17,9 +18,14 @@ export const createNumber = async contactData =>{
 export const getAllNumber = async ()=>{
     try {
         const result = (await axios.get(url)).data
-        return result
+        if(result){
+            return result
+        }else{
+            return []
+        }
     } catch (error) {
         console.log({error: error.message})
+        return []
     }
 }
 

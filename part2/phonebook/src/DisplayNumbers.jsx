@@ -6,7 +6,7 @@ const DisplayNumbers = ({newSearch}) => {
     <div className='mid-container'>
         <h2>Numbers</h2>
         {/* <div>debug: {newName}</div> */}
-        <NameList numbers={newSearch} />
+        {newSearch.length > 0 ? <NameList numbers={newSearch} /> : <p>No item found</p>}
     </div>
   )
 }
