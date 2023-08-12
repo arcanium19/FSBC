@@ -8,6 +8,7 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3001
 
+app.use(express.static('build'))
 app.use(cors())
 morgan.token('showData', function (req, res) { return JSON.stringify(req.body)})
 app.use(morgan(function (tokens, req, res) {
