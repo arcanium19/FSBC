@@ -7,6 +7,7 @@ dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3001
+const Contact = require('./models/Contact')
 
 app.use(express.static('build'))
 app.use(cors())
@@ -24,7 +25,8 @@ app.use(morgan(function (tokens, req, res) {
 app.use(bodyParser.json()); // Configura body-parser para analizar solicitudes JSON
 app.use(bodyParser.urlencoded({ extended: true })); // Configura body-parser para analizar datos de formularios
 
-let numbers = {
+  
+    const numbers = {
     "persons": [
       {
         "name": "Arto Hellas",
@@ -48,37 +50,26 @@ let numbers = {
       }
     ]
   }
-  
-//   let numbers = {
-//     "persons": [
-//       {
-//         "name": "Arto Hellas",
-//         "number": "040-123456",
-//         "id": 1
-//       },
-//       {
-//         "name": "Ada Lovelace",
-//         "number": "39-44-5323523",
-//         "id": 2
-//       },
-//       {
-//         "name": "Dan Abramov",
-//         "number": "12-43-234345",
-//         "id": 3
-//       },
-//       {
-//         "name": "Mary Poppendieck",
-//         "number": "39-23-6423122",
-//         "id": 4
-//       }
-//     ]
-//   }
 
 
 //GET ALL
 app.get('/api/persons', async (req, res)=>{
     try {
-        res.status(200).json(numbers.persons)
+        const contacts = await Contact.find({})
+        if(contacts.length === 0){
+            numbers.persons.forEach(async c =>{
+                const newContact = new Contact({
+                    name: c.name,
+                    number: c.number
+                })
+                console.log(newContact)
+                await newContact.save()
+            })
+            const contactList = await Contact.find({})
+            res.status(200).json(contactList)
+        }else{
+            res.status(200).json(contacts)
+        }
     } catch (error) {
         res.status(400).json({Error: error.message})
     }
@@ -88,11 +79,13 @@ app.get('/api/persons', async (req, res)=>{
 app.get('/api/persons/:id', async(req, res)=>{
     try {
         const { id } = req.params
-        const personNumber = numbers.persons[id-1]
-        if(personNumber) res.status(200).send(personNumber);
-        else{
-            res.status(404).json({Error404: 'Item not found'})
-        }
+        const contactData = await Contact.findById(id)
+        res.status(200).json(contactData)
+        // const personNumber = numbers.persons[id-1]
+        // if(personNumber) res.status(200).send(personNumber);
+        // else{
+        //     res.status(404).json({Error404: 'Item not found'})
+        // }
     } catch (error) {
         res.status(400).json({Error: error.message})
     }
@@ -101,8 +94,9 @@ app.get('/api/persons/:id', async(req, res)=>{
 //GET INFO
 app.get('/info', async (req, res)=>{
     try {
+        const allContacts = await Contact.find({})
         let count = 0;
-        for(let i=0; i<numbers.persons.length; i++){
+        for(let i=0; i<allContacts.length; i++){
             count += 1
         }
         const actualDate = new Date()
@@ -122,13 +116,14 @@ app.post('/api/persons', async(req, res)=>{
             if(!name) throw new Error('Please enter a name.')
             if(!number) throw new Error('Please enter a number.')
         }else{
-            const exist = numbers.persons.find(e=>e.name === name)
+            const exist = await Contact.findOne({name: name})
             if(exist) throw new Error('Name must be unique.')
             else{
-                const idRandom = Math.floor(Math.random() * 10000)
-                numbers.persons.push({name: name, number: number, id: idRandom})
-                console.log(numbers.persons)
-                res.status(200).send(`${name} has been added successfully`)
+                const newContact = new Contact({
+                    name, number
+                })
+                await newContact.save()
+                res.status(200).send(`${newContact.name} has been added successfully`)
             }
         }
         
@@ -142,18 +137,25 @@ app.post('/api/persons', async(req, res)=>{
 app.delete('/api/persons/:id', async(req, res)=>{
     try {
         const { id } = req.params
-        const person = numbers.persons.find(e=>e.id == id)
-        if(person){
-            const newArr = numbers.persons.filter(e=>e.id != id)
-            numbers.persons = newArr;
-            console.log(numbers.persons)
-            res.status(200).send(`${person} has been deleted successfully from the server`)
-        }else{
-            res.status(404).send(`id: ${id} not found`)
-        }
+        // const person = numbers.persons.find(e=>e.id == id)
+        const contactDeleted = await Contact.findByIdAndDelete(id)
+        res.status(200).send(`${contactDeleted.name} has been deleted successfully from the server`)
         
     } catch (error) {
         res.status(400).json({Error: error.message})
+    }
+})
+
+//UPDATE BY ID
+app.put('/api/persons/:id', async (req, res)=>{
+    try {
+        const { id } = req.params
+        const { number } = req.body
+        const contactUpdated = await Contact.findByIdAndUpdate(id, {number})
+        console.log(`${contactUpdated.name} has been updated successfully`)
+        res.status(200).send(`Updated successfully`)
+    } catch (error) {
+        
     }
 })
 

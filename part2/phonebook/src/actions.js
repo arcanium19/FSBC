@@ -40,8 +40,8 @@ export const deleteNumber = async id =>{
 
 export const updateNumber = async (id, dataUpdated) =>{
     try {
-        await axios.put(`${url}/${id}`, dataUpdated)
-        return `updated succefully`;
+        const result = await axios.put(`${url}/${id}`, dataUpdated)
+        return result;
     } catch (error) {
         console.log('Error: -',`error: ${error.message}`)
         return `error`
