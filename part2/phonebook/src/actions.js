@@ -7,10 +7,10 @@ export const createNumber = async contactData =>{
 
     try {
         const result = (await axios.post(url, contactData)).data
-        return result;
+        return {message: result};
     } catch (error) {
-        console.log({error: error.message})
-        return `error: please try againg`
+        console.log(error.response.data.error)
+        return {error: error.response.data.error}
     }
     
 }
@@ -24,8 +24,8 @@ export const getAllNumber = async ()=>{
             return []
         }
     } catch (error) {
-        console.log({error: error.message})
-        return []
+        console.log({error: error.response.data.error})
+        return {error: error.response.data.error}
     }
 }
 
@@ -34,7 +34,8 @@ export const deleteNumber = async id =>{
         const result = (await axios.delete(`${url}/${id}`)).data
         return result
     } catch (error) {
-        console.log({error: error.message})
+        console.log({error: error.response.data.error})
+        return {error: error.response.data.error}
     }
 }
 
@@ -43,7 +44,8 @@ export const updateNumber = async (id, dataUpdated) =>{
         const result = await axios.put(`${url}/${id}`, dataUpdated)
         return result;
     } catch (error) {
-        console.log('Error: -',`error: ${error.message}`)
-        return `error`
+        console.log({error: error.response.data.error})
+        console.log(error)
+        return {error: error.response.data.error}
     }
 }

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const uniquieValidator = require('mongoose-unique-validator')
 
 const url = process.env.URI_DB
 
@@ -15,9 +16,11 @@ mongoose.connect(url)
   })
 
 const contactSchema = new mongoose.Schema({
-  name: String,
-  number: String
+  name: {type: String, require: true, unique: true, minlength: 3},
+  number: {type: String, require: true, unique: true, minlength: 8}
 })
+
+contactSchema.plugin(uniquieValidator)
 
 contactSchema.set('toJSON', {
   transform: (document, returnedObject) => {
@@ -26,6 +29,7 @@ contactSchema.set('toJSON', {
     delete returnedObject.__v
   }
 })
+
 
 
 module.exports = mongoose.model('Contact', contactSchema)

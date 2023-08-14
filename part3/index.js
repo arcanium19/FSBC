@@ -53,7 +53,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // Configura body-parser par
 
 
 //GET ALL
-app.get('/api/persons', async (req, res)=>{
+app.get('/api/persons', async (req, res, next)=>{
     try {
         const contacts = await Contact.find({})
         if(contacts.length === 0){
@@ -71,12 +71,13 @@ app.get('/api/persons', async (req, res)=>{
             res.status(200).json(contacts)
         }
     } catch (error) {
-        res.status(400).json({Error: error.message})
+        next(error)
+        // res.status(400).json({Error: error.message})
     }
 })
 
 //GET BY ID
-app.get('/api/persons/:id', async(req, res)=>{
+app.get('/api/persons/:id', async(req, res, next)=>{
     try {
         const { id } = req.params
         const contactData = await Contact.findById(id)
@@ -87,12 +88,13 @@ app.get('/api/persons/:id', async(req, res)=>{
         //     res.status(404).json({Error404: 'Item not found'})
         // }
     } catch (error) {
-        res.status(400).json({Error: error.message})
+        next(error)
+        // res.status(400).json({Error: error.message})
     }
 })
 
 //GET INFO
-app.get('/info', async (req, res)=>{
+app.get('/info', async (req, res, next)=>{
     try {
         const allContacts = await Contact.find({})
         let count = 0;
@@ -103,21 +105,22 @@ app.get('/info', async (req, res)=>{
         res.status(200).send(`<div><p>Phonebook has info for ${count} people<br />${actualDate}</p></div>`)
 
     } catch (error) {
-        res.status(400).json({Error: error.message})
+        next(error)
+        // res.status(400).json({Error: error.message})
     }
 })
 
 //POST NEWONE
-app.post('/api/persons', async(req, res)=>{
+app.post('/api/persons', async(req, res, next)=>{
     try {
         //generate a random id
         const {name, number} = req.body
         if(!name || !number){
-            if(!name) throw new Error('Please enter a name.')
-            if(!number) throw new Error('Please enter a number.')
+            if(!name) res.status(400).send('Please enter a name.')
+            if(!number) res.status(400).send('Please enter a number.')
         }else{
             const exist = await Contact.findOne({name: name})
-            if(exist) throw new Error('Name must be unique.')
+            if(exist) res.status(400).send('Name must be unique.')
             else{
                 const newContact = new Contact({
                     name, number
@@ -128,13 +131,14 @@ app.post('/api/persons', async(req, res)=>{
         }
         
     } catch (error) {
-        res.status(400).json({Error: error.message})
+        next(error)
+        // res.status(400).json({Error: error.message})
     }
 })
 
 
 //DELETE BY ID
-app.delete('/api/persons/:id', async(req, res)=>{
+app.delete('/api/persons/:id', async(req, res, next)=>{
     try {
         const { id } = req.params
         // const person = numbers.persons.find(e=>e.id == id)
@@ -142,21 +146,48 @@ app.delete('/api/persons/:id', async(req, res)=>{
         res.status(200).send(`${contactDeleted.name} has been deleted successfully from the server`)
         
     } catch (error) {
-        res.status(400).json({Error: error.message})
+        next(error)
+        // res.status(400).json({Error: error.message})
     }
 })
 
 //UPDATE BY ID
-app.put('/api/persons/:id', async (req, res)=>{
+app.put('/api/persons/:id', async (req, res, next)=>{
     try {
         const { id } = req.params
-        const { number } = req.body
-        const contactUpdated = await Contact.findByIdAndUpdate(id, {number})
-        console.log(`${contactUpdated.name} has been updated successfully`)
-        res.status(200).send(`Updated successfully`)
+        const { name, number } = req.body
+        const contactUpdated = await Contact.findByIdAndUpdate(id, {number}, { runValidators: true, context: 'query' })
+        if(!contactUpdated){
+            res.status(400).json({error: `Information of ${name} has already been removed from the server`})
+        } 
+        else{
+            console.log(`${contactUpdated.name} has been updated successfully`)
+            res.status(200).send(`Updated successfully`)
+        } 
     } catch (error) {
-        
+        next(error)
+        // res.status(400).json({Error: error.message})
     }
 })
+
+const uknownPath = (req, res)=>{
+        res.status(404).json({Error: `404 - url not found`})
+}
+
+app.use(uknownPath)
+
+const errorMiddlewares = async (error, req, res, next)=>{
+    if(error.name === 'CastError'){
+        res.status(400).json({ error: 'malformatted id' })
+    }else if(error.name === 'ValidationError'){
+        res.status(400).json({error: error.message})
+    }else if(error.name === 'dataDeleted'){
+        res.status(400).json({error: error.message})
+    }
+
+    next(error)
+}
+
+app.use(errorMiddlewares)
 
 app.listen(PORT, ()=>{console.log(`Server running on port: ${PORT}`)})

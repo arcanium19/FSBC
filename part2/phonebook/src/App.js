@@ -17,7 +17,7 @@ const App = ({persons}) => {
   const [ newNumber, setNumber ] = useState('')
   const [ newSearch, setNewSearch ] = useState('')
   const [ filtered, setFiltered] = useState([])
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState({})
 
   const handleName = (e)=>{
     setNewName(e.target.value)
@@ -39,24 +39,34 @@ const App = ({persons}) => {
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         const response = await updateNumber(sendAlert.id,{name: newName, number: newNumber})
         console.log(response)
-        if(response === 'error'){
+        if(response?.error?.includes('removed')){
           setNewName('')
           setNumber('')
           setMessage(`Information of ${newName} has already been removed from the server`)
-        }else{
+        }
+        if(response?.error){
           setNewName('')
           setNumber('')
-          setMessage(`${newName} has been updated successfully`)
+          setMessage({error: `${response.error}`})
+        }
+        else{
+          setNewName('')
+          setNumber('')
+          setMessage({message: `${newName} has been updated successfully`})
         }
         
       }
     }else{
-      createNumber({name: newName, number: newNumber})
+      const response = await createNumber({name: newName, number: newNumber})
       // persons.push({name: newName, number: newNumber})
       // persons.push({name: newName})
       setNewName('')
       setNumber('')
-      setMessage(`${newName} has been added successfully`)
+      if(response?.error){
+        setMessage({error: response.error})
+      }else{
+        setMessage({message: `${newName} has been added successfully`})
+      }
     }
   }
 
