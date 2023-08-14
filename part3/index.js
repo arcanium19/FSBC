@@ -11,53 +11,53 @@ const Contact = require('./models/Contact')
 
 app.use(express.static('build'))
 app.use(cors())
-morgan.token('showData', function (req, res) { return JSON.stringify(req.body)})
+morgan.token('showData', function (req) { return JSON.stringify(req.body)})
 app.use(morgan(function (tokens, req, res) {
     return [
-      tokens.method(req, res),
-      tokens.url(req, res),
-      tokens.status(req, res),
-      tokens.res(req, res, 'content-length'), '-',
-      tokens['response-time'](req, res), 'ms', '-',
-      tokens.showData(req, res)
+        tokens.method(req, res),
+        tokens.url(req, res),
+        tokens.status(req, res),
+        tokens.res(req, res, 'content-length'), '-',
+        tokens['response-time'](req, res), 'ms', '-',
+        tokens.showData(req, res)
     ].join(' ')
-  }))
-app.use(bodyParser.json()); // Configura body-parser para analizar solicitudes JSON
-app.use(bodyParser.urlencoded({ extended: true })); // Configura body-parser para analizar datos de formularios
+}))
+app.use(bodyParser.json()) // Configura body-parser para analizar solicitudes JSON
+app.use(bodyParser.urlencoded({ extended: true })) // Configura body-parser para analizar datos de formularios
 
-  
-    const numbers = {
-    "persons": [
-      {
-        "name": "Arto Hellas",
-        "number": "040-123456",
-        "id": 1
-      },
-      {
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523",
-        "id": 2
-      },
-      {
-        "name": "Dan Abramov",
-        "number": "12-43-234345",
-        "id": 3
-      },
-      {
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122",
-        "id": 4
-      }
+
+const numbers = {
+    'persons': [
+        {
+            'name': 'Arto Hellas',
+            'number': '040-123456',
+            'id': 1
+        },
+        {
+            'name': 'Ada Lovelace',
+            'number': '39-44-5323523',
+            'id': 2
+        },
+        {
+            'name': 'Dan Abramov',
+            'number': '12-43-234345',
+            'id': 3
+        },
+        {
+            'name': 'Mary Poppendieck',
+            'number': '39-23-6423122',
+            'id': 4
+        }
     ]
-  }
+}
 
 
 //GET ALL
-app.get('/api/persons', async (req, res, next)=>{
+app.get('/api/persons', async (req, res, next) => {
     try {
         const contacts = await Contact.find({})
         if(contacts.length === 0){
-            numbers.persons.forEach(async c =>{
+            numbers.persons.forEach(async c => {
                 const newContact = new Contact({
                     name: c.name,
                     number: c.number
@@ -77,7 +77,7 @@ app.get('/api/persons', async (req, res, next)=>{
 })
 
 //GET BY ID
-app.get('/api/persons/:id', async(req, res, next)=>{
+app.get('/api/persons/:id', async(req, res, next) => {
     try {
         const { id } = req.params
         const contactData = await Contact.findById(id)
@@ -94,10 +94,10 @@ app.get('/api/persons/:id', async(req, res, next)=>{
 })
 
 //GET INFO
-app.get('/info', async (req, res, next)=>{
+app.get('/info', async (req, res, next) => {
     try {
         const allContacts = await Contact.find({})
-        let count = 0;
+        let count = 0
         for(let i=0; i<allContacts.length; i++){
             count += 1
         }
@@ -111,15 +111,15 @@ app.get('/info', async (req, res, next)=>{
 })
 
 //POST NEWONE
-app.post('/api/persons', async(req, res, next)=>{
+app.post('/api/persons', async(req, res, next) => {
     try {
         //generate a random id
-        const {name, number} = req.body
+        const { name, number } = req.body
         if(!name || !number){
             if(!name) res.status(400).send('Please enter a name.')
             if(!number) res.status(400).send('Please enter a number.')
         }else{
-            const exist = await Contact.findOne({name: name})
+            const exist = await Contact.findOne({ name: name })
             if(exist) res.status(400).send('Name must be unique.')
             else{
                 const newContact = new Contact({
@@ -129,7 +129,6 @@ app.post('/api/persons', async(req, res, next)=>{
                 res.status(200).send(`${newContact.name} has been added successfully`)
             }
         }
-        
     } catch (error) {
         next(error)
         // res.status(400).json({Error: error.message})
@@ -138,13 +137,12 @@ app.post('/api/persons', async(req, res, next)=>{
 
 
 //DELETE BY ID
-app.delete('/api/persons/:id', async(req, res, next)=>{
+app.delete('/api/persons/:id', async(req, res, next) => {
     try {
         const { id } = req.params
         // const person = numbers.persons.find(e=>e.id == id)
         const contactDeleted = await Contact.findByIdAndDelete(id)
         res.status(200).send(`${contactDeleted.name} has been deleted successfully from the server`)
-        
     } catch (error) {
         next(error)
         // res.status(400).json({Error: error.message})
@@ -152,37 +150,37 @@ app.delete('/api/persons/:id', async(req, res, next)=>{
 })
 
 //UPDATE BY ID
-app.put('/api/persons/:id', async (req, res, next)=>{
+app.put('/api/persons/:id', async (req, res, next) => {
     try {
         const { id } = req.params
         const { name, number } = req.body
-        const contactUpdated = await Contact.findByIdAndUpdate(id, {number}, { runValidators: true, context: 'query' })
+        const contactUpdated = await Contact.findByIdAndUpdate(id, { number }, { runValidators: true, context: 'query' })
         if(!contactUpdated){
-            res.status(400).json({error: `Information of ${name} has already been removed from the server`})
-        } 
+            res.status(400).json({ error: `Information of ${name } has already been removed from the server` })
+        }
         else{
             console.log(`${contactUpdated.name} has been updated successfully`)
-            res.status(200).send(`Updated successfully`)
-        } 
+            res.status(200).send('Updated successfully')
+        }
     } catch (error) {
         next(error)
         // res.status(400).json({Error: error.message})
     }
 })
 
-const uknownPath = (req, res)=>{
-        res.status(404).json({Error: `404 - url not found`})
+const uknownPath = (req, res) => {
+    res.status(404).json({ Error: '404 - url not found' })
 }
 
 app.use(uknownPath)
 
-const errorMiddlewares = async (error, req, res, next)=>{
+const errorMiddlewares = async (error, req, res, next) => {
     if(error.name === 'CastError'){
         res.status(400).json({ error: 'malformatted id' })
     }else if(error.name === 'ValidationError'){
-        res.status(400).json({error: error.message})
+        res.status(400).json({ error: error.message })
     }else if(error.name === 'dataDeleted'){
-        res.status(400).json({error: error.message})
+        res.status(400).json({ error: error.message })
     }
 
     next(error)
@@ -190,4 +188,4 @@ const errorMiddlewares = async (error, req, res, next)=>{
 
 app.use(errorMiddlewares)
 
-app.listen(PORT, ()=>{console.log(`Server running on port: ${PORT}`)})
+app.listen(PORT, () => {console.log(`Server running on port: ${PORT}`)})

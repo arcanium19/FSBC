@@ -12,7 +12,7 @@ const numberSchema = new mongoose.Schema({
     number: String
 })
 
-const Number = mongoose.model('Number', numberSchema);
+const Number = mongoose.model('Number', numberSchema)
 
 if(process.argv[3] && process.argv[4]){
     const name = process.argv[3]
@@ -26,29 +26,28 @@ if(process.argv[3] && process.argv[4]){
             name,
             number
         })
-    
-        addNewOne.save().then(result =>{
+
+        addNewOne.save().then(() => {
             console.log(`added ${name} number ${number} to phonebook`)
             mongoose.connection.close()
-        }).catch(error=>{
-            console.log(`Can not be added.`)
+        }).catch(error => {
+            console.log('Can not be added.')
             console.log(error.message)
         })
     }
-    
+
 }else{
-    Number.find({}).then(result =>{
+    Number.find({}).then(result => {
         console.log('Phonebook:')
         if(result.length > 0){
-            result.forEach(contact =>{
+            result.forEach(contact => {
                 console.log(`${contact.name} ${contact.number}`)
             })
         }else{
-            console.log(`It'sEmpty.`)
+            console.log('It'+'sEmpty')
         }
         mongoose.connection.close()
-    }).catch(error =>{
-        
+    }).catch(error => {
         console.log(error.message)
     })
 }
